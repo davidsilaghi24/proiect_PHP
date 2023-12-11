@@ -5,114 +5,94 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Article;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class ArticleController extends Controller
 {
-    // Constructor pentru a adăuga middleware-ul de autentificare
+    // Asigurați-vă că utilizatorul este autentificat pentru toate acțiunile în acest controller
     public function __construct()
     {
         $this->middleware('auth');
     }
 
-    // Metoda pentru listarea tuturor articolelor
+    // Afișează o listă cu toate articolele
     public function index()
     {
         $articles = Article::all();
         return view('articles.index', compact('articles'));
     }
 
-    // Metoda pentru afișarea formularului de creare a unui articol
+    // Arată formularul pentru crearea unui articol nou
     public function create()
     {
-        if (!auth()->user()->hasRole('jurnalist')) {
-            abort(403, 'Doar jurnaliștii pot crea articole');
+        // Verifică dacă utilizatorul are rolul de jurnalist
+        if (!Auth::user()->hasRole('jurnalist')) {
+            abort(403, 'Accesul permis doar pentru jurnaliști.');
         }
-
         return view('articles.create');
     }
 
-    // Metoda pentru salvarea unui nou articol
+    // Stochează un articol nou în baza de date
     public function store(Request $request)
     {
-        if (!auth()->user()->hasRole('jurnalist')) {
-            abort(403, 'Doar jurnaliștii pot salva articole');
-        }
-
-        $validator = Validator::make($request->all(), [
+        // Validează cererea
+        $validatedData = $request->validate([
             'title' => 'required|max:255',
             'content' => 'required',
-            // Alte reguli de validare necesare
         ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
-
-        $article = new Article();
-        $article->title = $request->title;
-        $article->content = $request->content;
-        $article->journalist_id = auth()->user()->id;
+        // Crează un nou articol și salvează-l
+        $article = new Article($validatedData);
+        $article->journalist_id = Auth::id();
         $article->save();
 
-        return redirect()->route('articles.show', $article->id);
+        // Redirecționează către pagina de afișare a articolului
+        return redirect()->route('articles.show', $article);
     }
 
-    // Metoda pentru afișarea unui articol
-    public function show($id)
+    // Afișează un articol specific
+    public function show(Article $article)
     {
-        $article = Article::findOrFail($id);
         return view('articles.show', compact('article'));
     }
 
-    // Metoda pentru afișarea articolului pentru editare
-    public function edit($id)
+    // Arată formularul pentru editarea unui articol specific
+    public function edit(Article $article)
     {
-        $article = Article::findOrFail($id);
-
-        if (!auth()->user()->hasRole('editor') && $article->journalist_id !== auth()->user()->id) {
-            abort(403, 'Doar editorii sau autorul pot edita acest articol');
+        // Verifică dacă utilizatorul este autorul articolului sau are rolul de editor
+        if (Auth::id() !== $article->journalist_id && !Auth::user()->hasRole('editor')) {
+            abort(403, 'Numai autorul sau editorii pot edita acest articol.');
         }
-
         return view('articles.edit', compact('article'));
     }
 
-    // Metoda pentru actualizarea articolului
-    public function update(Request $request, $id)
+    // Actualizează un articol specific în baza de date
+    public function update(Request $request, Article $article)
     {
-        $article = Article::findOrFail($id);
-
-        if (!auth()->user()->hasRole('editor') && $article->journalist_id !== auth()->user()->id) {
-            abort(403, 'Doar editorii sau autorul pot actualiza acest articol');
-        }
-
-        $validator = Validator::make($request->all(), [
+        // Validează cererea
+        $validatedData = $request->validate([
             'title' => 'required|max:255',
             'content' => 'required',
-            // Alte reguli de validare necesare
         ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
-
-        $article->title = $request->title;
-        $article->content = $request->content;
+        // Actualizează articolul
+        $article->fill($validatedData);
         $article->save();
 
-        return redirect()->route('articles.show', $article->id);
+        // Redirecționează către pagina de afișare a articolului
+        return redirect()->route('articles.show', $article);
     }
 
-    // Metoda pentru ștergerea unui articol
-    public function destroy($id)
+    // Șterge un articol specific
+    public function destroy(Article $article)
     {
-        $article = Article::findOrFail($id);
-
-        if (!auth()->user()->hasRole('editor') && $article->journalist_id !== auth()->user()->id) {
-            abort(403, 'Doar editorii sau autorul pot șterge acest articol');
+        // Verifică dacă utilizatorul este autorul articolului sau are rolul de editor
+        if (Auth::id() !== $article->journalist_id && !Auth::user()->hasRole('editor')) {
+            abort(403, 'Numai autorul sau editorii pot șterge acest articol.');
         }
-
         $article->delete();
 
+        // Redirecționează către lista de articole
         return redirect()->route('articles.index');
     }
 }
