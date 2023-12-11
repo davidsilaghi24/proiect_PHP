@@ -40,12 +40,17 @@ class JournalistController extends Controller
         // Actualizare
         $journalist->update([
             'name' => $request->name,
-            'email' => $request->email,
             'biography' => $request->biography,
+        ]);
+
+        // Actualizarea adresei de email a utilizatorului asociat
+        $journalist->user->update([
+            'email' => $request->email,
         ]);
 
         return redirect()->route('journalist.profile', $journalist->id);
     }
+
 
     // Afișează articolele încărcate de jurnalist
     public function showArticles($journalist_id)

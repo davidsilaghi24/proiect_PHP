@@ -22,6 +22,8 @@ Route::middleware('auth')->group(function () {
     // Rute pentru jurnaliști
     Route::get('/journalist/{journalist_id}/articles', [JournalistController::class, 'showArticles'])->name('journalist.articles');
     Route::get('/journalist/articles/{article}/edit', [JournalistController::class, 'editArticle'])->name('journalist.articles.edit');
+    Route::get('/journalist/{journalist}/profile', [JournalistController::class, 'showProfile'])->name('journalist.profile');
+    Route::patch('/journalist/{journalist}/profile', [JournalistController::class, 'updateProfile'])->name('journalist.profile.update');
 
     // Rute pentru articole
     Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
