@@ -18,7 +18,13 @@ class ArticleController extends Controller
     // Afișează o listă cu toate articolele
     public function index()
     {
-        $articles = Article::all();
+        // Verifică dacă utilizatorul are rolul de jurnalist
+        if (Auth::user()->hasRole('jurnalist')) {
+            $articles = Article::where('journalist_id', Auth::user()->id)->get();
+        } else {
+            $articles = [];
+        }
+
         return view('articles.index', compact('articles'));
     }
 
@@ -41,13 +47,15 @@ class ArticleController extends Controller
             'content' => 'required',
         ]);
 
-        // Crează un nou articol și salvează-l
-        $article = new Article($validatedData);
-        $article->journalist_id = Auth::user()->journalist->id;
-        $article->save();
+        // Crează un nou articol și asociază-l cu utilizatorul curent (doar dacă are rolul de jurnalist)
+        if (Auth::user()->hasRole('jurnalist')) {
+            $article = new Article($validatedData);
+            $article->journalist_id = Auth::user()->id;
+            $article->save();
+        }
 
         // Redirecționează către pagina de afișare a articolului
-        return redirect()->route('articles.show', $article);
+        return redirect()->route('articles.index');
     }
 
     // Afișează un articol specific

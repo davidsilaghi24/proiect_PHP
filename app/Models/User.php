@@ -42,8 +42,13 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime', // Adăugat cast pentru 'email_verified_at'.
     ];
 
-    public function journalist()
+    /**
+     * Define a relationship to journalist articles.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function journalistArticles()
     {
-        return $this->hasOne(Journalist::class);
+        return $this->hasMany(Article::class, 'user_id')->where('role', 'jurnalist');
     }
 }

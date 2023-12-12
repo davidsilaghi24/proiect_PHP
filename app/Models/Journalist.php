@@ -4,10 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
 
-class Journalist extends Model // Schimbă din Authenticatable în Model
+class Journalist extends Model
 {
     use HasFactory, HasRoles;
 
@@ -33,15 +32,16 @@ class Journalist extends Model // Schimbă din Authenticatable în Model
     ];
 
     /**
-     * Get the user that owns the journalist.
+     * Get the user associated with the journalist.
      */
     public function user()
     {
-        return $this->belongsTo(User::class);
+        // Utilizează coloana 'email' din tabela 'journalists' pentru a face legătura cu tabela 'users'.
+        return $this->belongsTo(User::class, 'email', 'email');
     }
 
     /**
-     * Get the articles for the journalist.
+     * Get the articles written by the journalist.
      */
     public function articles()
     {
