@@ -30,13 +30,10 @@
             </label>
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm hover:text-gray-700" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
-
+        <div class="flex items-center justify-between mt-4">
+            <a class="underline text-sm hover:text-gray-700" href="{{ route('register') }}">
+                {{ __('Need an account? Sign up') }}
+            </a>
             <x-primary-button class="ms-3">
                 {{ __('Log in') }}
             </x-primary-button>

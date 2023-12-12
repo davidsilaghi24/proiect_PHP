@@ -36,6 +36,19 @@
                 <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
             </div>
 
+            <!-- Roluri Dropdown -->
+            <div class="mb-6">
+                <x-input-label for="role" :value="__('Alege Rolul')" />
+                <select id="role" name="role" class="block mt-1 w-full" required>
+                    <option value="" disabled selected>Selectează rolul</option>
+                    <option value="jurnalist">Jurnalist</option>
+                    <option value="editor">Editor</option>
+                    <option value="cititor">Cititor</option>
+                    <option value="administrator">Administrator</option>
+                </select>
+                <x-input-error :messages="$errors->get('role')" class="mt-2" />
+            </div>
+
             <!-- Buton de Înregistrare -->
             <div class="flex items-center justify-between">
                 <a class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" href="{{ route('login') }}">

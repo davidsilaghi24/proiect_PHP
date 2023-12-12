@@ -3,15 +3,17 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\JournalistController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\DashboardController; // Adaugă acest rând pentru a folosi DashboardController
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Șterge sau comentează această rută dacă vrei să folosești DashboardController
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->middleware(['auth'])->name('dashboard');
 
 // Rute pentru autentificare și articole
 Route::middleware('auth')->group(function () {
@@ -33,6 +35,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/articles/{article}/edit', [ArticleController::class, 'edit'])->name('articles.edit');
     Route::patch('/articles/{article}', [ArticleController::class, 'update'])->name('articles.update');
     Route::delete('/articles/{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
+
+    // Această rută acum va funcționa pentru că nu există o altă definiție a rutei '/dashboard' deasupra ei
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
 });
 
 require __DIR__.'/auth.php';
