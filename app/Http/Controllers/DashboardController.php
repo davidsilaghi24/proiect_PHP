@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        // Aici poți adăuga logica pentru a trimite date la view, dacă este necesar
-        return view('dashboard');
+        $user = Auth::user();
+        $journalistProfile = $user->journalist;
+        $articles = $journalistProfile ? $journalistProfile->articles : collect();
+
+        return view('dashboard', compact('articles'));
     }
 }

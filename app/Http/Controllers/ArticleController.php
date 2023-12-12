@@ -43,7 +43,7 @@ class ArticleController extends Controller
 
         // Crează un nou articol și salvează-l
         $article = new Article($validatedData);
-        $article->journalist_id = Auth::id();
+        $article->journalist_id = Auth::user()->journalist->id;
         $article->save();
 
         // Redirecționează către pagina de afișare a articolului

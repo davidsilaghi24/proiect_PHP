@@ -10,11 +10,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Șterge sau comentează această rută dacă vrei să folosești DashboardController
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
-// })->middleware(['auth'])->name('dashboard');
-
 // Rute pentru autentificare și articole
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
